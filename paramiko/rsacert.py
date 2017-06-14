@@ -9,6 +9,16 @@ from paramiko.rsakey import RSAKey
 from paramiko.ssh_exception import SSHException
 
 
+RSA_CERT_SUFFIX = '-cert.pub'
+
+def _guess_files(filename):
+    if filename.endswith(RSA_CERT_SUFFIX):
+        return (filename.replace(RSA_CERT_SUFFIX, ''), filename)
+    if filename.endswith('_rsa'):
+        return (filename, '%s%s' % (filename, RSA_CERT_SUFFIX))
+    raise Exception('Unable to deduce private key and certificate path from '
+                    'filename given: %s' % filename)
+
 class RSACert(RSAKey):
     """
     Certificate equivalent of RSAKey
@@ -151,10 +161,12 @@ class RSACert(RSAKey):
     @classmethod
     def from_private_key_file(cls, filename, password=None):
         """
-        Not implemented in RSACert because certificates cannot be generated
-        from private key files
+        Load a private key and CA certificate. Allow either the private key or
+        the cert to be specified and deduce the other one
         """
-        raise Exception('Not implemented in RSACert')
+        (privkey_filename, cert_filename) = _guess_files(filename)
+        return cls(privkey_filename=privkey_filename,
+                   cert_filename=cert_filename, password=password)
 
     @classmethod
     def from_private_key(cls, file_obj, password=None):

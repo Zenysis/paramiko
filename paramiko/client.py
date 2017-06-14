@@ -36,6 +36,7 @@ from paramiko.ecdsakey import ECDSAKey
 from paramiko.ed25519key import Ed25519Key
 from paramiko.hostkeys import HostKeys
 from paramiko.py3compat import string_types
+from paramiko.rsacert import RSACert
 from paramiko.rsakey import RSAKey
 from paramiko.ssh_exception import (
     SSHException, BadHostKeyException, NoValidConnectionsError
@@ -597,6 +598,7 @@ class SSHClient (ClosingContextManager):
 
             for keytype, name in [
                 (RSAKey, "rsa"),
+                (RSACert, "rsa-cert.pub"),
                 (DSSKey, "dsa"),
                 (ECDSAKey, "ecdsa"),
                 (Ed25519Key, "ed25519"),
